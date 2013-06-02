@@ -21,11 +21,12 @@ exports.expressCreateServer = function (hook_name, args, cb) {
 
 exports.socketio = function (hook_name, args, cb) {
   var io = args.io.of("/settings");
+  var settingsFilename = settings.settingsFilename;
   io.on('connection', function (socket) {
     if (!socket.handshake.session.user || !socket.handshake.session.user.is_admin) return;
 
     socket.on("load", function (query) {
-      fs.readFile('settings.json', 'utf8', function (err,data) {
+      fs.readFile(settingsFilename, 'utf8', function (err,data) {
         if (err) {
           return console.log(err);
         }
@@ -37,7 +38,7 @@ exports.socketio = function (hook_name, args, cb) {
     });
 
     socket.on("saveSettings", function (settings) {
-      fs.writeFile('settings.json', settings, function (err) {
+      fs.writeFile(settingsFilename, settings, function (err) {
         if (err) throw err;
         socket.emit("saveprogress", "saved");
       });

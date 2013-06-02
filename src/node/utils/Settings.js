@@ -1,5 +1,5 @@
 /**
- * The Settings Modul reads the settings out of settings.json and provides 
+ * The Settings Modul reads the settings out of settings.json and provides
  * this information to the other modules
  */
 
@@ -32,6 +32,9 @@ var randomString = require('ep_etherpad-lite/static/js/pad_utils').randomString;
 /* Root path of the installation */
 exports.root = path.normalize(path.join(npm.dir, ".."));
 
+/* Path to the settings.json file (relative to root of the installation) */
+exports.settingsFilename = "settings.json";
+
 /**
  * The app title, visible e.g. in the browser window
  */
@@ -48,7 +51,7 @@ exports.faviconTimeslider = "../../" + exports.favicon;
  * The IP ep-lite should listen to
  */
 exports.ip = "0.0.0.0";
-  
+
 /**
  * The Port ep-lite should listen to
  */
@@ -141,7 +144,7 @@ exports.abiwordAvailable = function()
 
 exports.reloadSettings = function reloadSettings() {
   // Discover where the settings file lives
-  var settingsFilename = argv.settings || "settings.json";
+  var settingsFilename = argv.settings || exports.settingsFilename;
   settingsFilename = path.resolve(path.join(exports.root, settingsFilename));
 
   var settingsStr;
@@ -164,6 +167,9 @@ exports.reloadSettings = function reloadSettings() {
     process.exit(1);
   }
 
+  // Save settings.json filename
+  settings.settingsFilename = settingsFilename;
+
   //loop trough the settings
   for(var i in settings)
   {
@@ -185,7 +191,7 @@ exports.reloadSettings = function reloadSettings() {
       console.warn("Unknown Setting: '" + i + "'. This setting doesn't exist or it was removed");
     }
   }
-  
+
   log4js.configure(exports.logconfig);//Configure the logging appenders
   log4js.setGlobalLogLevel(exports.loglevel);//set loglevel
   log4js.replaceConsole();
